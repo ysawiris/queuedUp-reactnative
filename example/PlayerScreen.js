@@ -12,6 +12,7 @@ import {
 	TouchableOpacity
 } from 'react-native';
 import Spotify from 'rn-spotify-sdk';
+import SpotifySearch from './spotify_search';
 import SearchBar from './SearchBar';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 
@@ -27,7 +28,7 @@ export default class PlayerScreen extends PureComponent {
 		this.state = {
 			spotifyUserName: null,
 			query: "",
-			types: ['tracks','albums','artists','playlists'],
+			types: ['artists'],
 			artist: null,
 			tracks: undefined,
 			errorMessage: ''
@@ -35,6 +36,7 @@ export default class PlayerScreen extends PureComponent {
 
 		this.spotifyLogoutButtonWasPressed = this.spotifyLogoutButtonWasPressed.bind(this);
 		this.search = this.search.bind(this);
+		this.handleNameChange = this.handleNameChange.bind(this);
 	}
 
 	componentDidMount() {
@@ -42,6 +44,7 @@ export default class PlayerScreen extends PureComponent {
 		Spotify.getMe().then((result) => {
 			// update state with user info
 			this.setState({ spotifyUserName: result.display_name });
+			console.log(this.state.spotifyUserName)
 			// play song
 			// return Spotify.playURI("spotify:track:0W9E3s2G4szLUwXsE17x5E", 0, 0);
 		}).then(() => {
@@ -65,15 +68,17 @@ export default class PlayerScreen extends PureComponent {
 	}
 
 	search() {
-		const result = Spotify.search(this.state.query, this.state.types)
+		console.log(this.state.query)
+		const result = SpotifySearch.search(this.state.query, this.state.types)
 			.then(json => this.handleSearch(json))
-			.catch(e => {
-				this.displayErrorMessage('Please enter a search query')
+			.catch(err => {
+				console.log(err)
 			});
 		return result;
 	}
 
 	handleSearch(jsonData) {
+		console.log(jsonData)
 		const artist = jsonData.artists.name[0];
 		if(artist) {
 			this.loadTracks(artist.id);
@@ -85,8 +90,9 @@ export default class PlayerScreen extends PureComponent {
 	}
 
 	loadTracks(artistId) {
-		Spotify.getTracks(artistId)
+		SpotifySearch.getSongs(artistId)
 		.then((json) => {
+			console.log(json)
 			this.setState({
 				tracks: json.tracks
 			})
@@ -100,7 +106,12 @@ export default class PlayerScreen extends PureComponent {
 		  errorMessage: ''
 		});
 		return jsonData;
-	  }
+	}
+
+	handleNameChange(query) {
+		this.setState({ query });
+	}
+
 
 	render() {
 		const { query } = this.state;
@@ -137,9 +148,11 @@ export default class PlayerScreen extends PureComponent {
 						/>
 					</View>
 				</ScrollView>
+				<Text artist={this.state.tracks}>Songs:</Text>
 				<View style={styles.inputContainer}>
 					<TouchableOpacity
 						style={styles.enterButton}
+						onPress={this.search}
 					>
 						<Text style={styles.enterButtonText}>Enter</Text>
 					</TouchableOpacity>
