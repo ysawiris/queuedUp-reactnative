@@ -3,13 +3,12 @@ import { Alert, Linking, Platform, StyleSheet, Text, View } from "react-native";
 import { createSwitchNavigator, createStackNavigator, createAppContainer } from "react-navigation";
 
 import InitialScreen from "./InitialScreen.js";
-import PlayerScreen from "./PlayerScreen.js";
-
+import PlayerScreen from "./screens/playerScreen.js";
 import HomePage from "./screens/homePage";
 import LoginPage from "./screens/loginPage";
 
-const App = createSwitchNavigator({
-  initial: { screen: InitialScreen },
+const LoginNavigator = createSwitchNavigator({
+  initial: { screen: LoginPage },
   player: { screen: PlayerScreen },
 });
 
@@ -21,10 +20,10 @@ const App = createSwitchNavigator({
 const App = createStackNavigator(
   {
     routeHomePage: HomePage,
-    routeLoginPage: LoginPage,
+    routeLoginPage: LoginNavigator,
   },
   {
-    routeHomePage: "routeOne",
+    initialRouteName: "routeHomePage",
   }
 );
 
