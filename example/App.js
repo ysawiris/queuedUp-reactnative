@@ -8,10 +8,10 @@ import PlayerScreen from "./PlayerScreen.js";
 import HomePage from "./screens/homePage";
 import LoginPage from "./screens/loginPage";
 
-// const App = createSwitchNavigator({
-//   initial: { screen: InitialScreen },
-//   player: { screen: PlayerScreen },
-// });
+const App = createSwitchNavigator({
+  initial: { screen: InitialScreen },
+  player: { screen: PlayerScreen },
+});
 
 // const LoginNavigator = createSwitchNavigator({
 //   initial: { screen: InitialScreen },

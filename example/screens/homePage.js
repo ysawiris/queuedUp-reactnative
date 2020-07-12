@@ -3,47 +3,57 @@ import { View, Text, Image, TextInput, ScrollView, StyleSheet, TouchableOpacity 
 
 // Import external libraries
 
-export default function HomePage() {
-  const [code, setCode] = useState("");
+class HomePage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      code: 0,
+    };
+  }
 
-  const onPress = () => {
+  onPress() {
     console.log("hello-world");
-  };
+  }
 
-  return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
-      <View style={styles.logoWrapper}>
-        <Image source={require("../assets/images/logo.png")} style={styles.logo} />
-      </View>
-      <View style={styles.enterFriendsCodeTextWrapper}>
-        <Text style={styles.enterFriendsCodeText}>Enter Friend's Code</Text>
-      </View>
-      <View style={styles.horizontalRule}></View>
-      <View style={styles.friendsCodeInputWrapper}>
-        <TextInput
-          style={styles.friendsCodeInput}
-          placeholder="628432"
-          placeholderTextColor="#EEEEEE"
-          onChangeText={(code) => setCode(text)}
-          defaultValue={code}
-        />
-      </View>
-      <View style={styles.submitCodeButtonWrapper}>
-        <TouchableOpacity onPress={onPress} style={styles.submitCodeButton}>
-          <Text style={styles.codeButtonText}>Connect</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.enterFriendsCodeTextWrapper}>
-        <Text style={styles.enterFriendsCodeText}>Have the Aux?</Text>
-      </View>
-      <View style={styles.horizontalRule}></View>
-      <View style={styles.submitCodeButtonWrapper}>
-        <TouchableOpacity onPress={onPress} style={styles.submitCodeButton}>
-          <Text style={styles.codeButtonText}>Get QueuedUp!</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  );
+  render() {
+    return (
+      <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
+        <View style={styles.logoWrapper}>
+          <Image source={require("../assets/images/logo.png")} style={styles.logo} />
+        </View>
+        <View style={styles.enterFriendsCodeTextWrapper}>
+          <Text style={styles.enterFriendsCodeText}>Enter Friend's Code</Text>
+        </View>
+        <View style={styles.horizontalRule}></View>
+        <View style={styles.friendsCodeInputWrapper}>
+          <TextInput
+            style={styles.friendsCodeInput}
+            placeholder="628432"
+            placeholderTextColor="#EEEEEE"
+            onChangeText={(text) => this.setState({ code: text })}
+            defaultValue={this.state.code}
+          />
+        </View>
+        <View style={styles.submitCodeButtonWrapper}>
+          <TouchableOpacity onPress={() => this.onPress} style={styles.submitCodeButton}>
+            <Text style={styles.codeButtonText}>Connect</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.enterFriendsCodeTextWrapper}>
+          <Text style={styles.enterFriendsCodeText}>Have the Aux?</Text>
+        </View>
+        <View style={styles.horizontalRule}></View>
+        <View style={styles.submitCodeButtonWrapper}>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("routeLoginPage")}
+            style={styles.submitCodeButton}
+          >
+            <Text style={styles.codeButtonText}>Get QueuedUp!</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -109,3 +119,5 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
 });
+
+export default HomePage;
