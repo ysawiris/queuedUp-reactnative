@@ -30,7 +30,7 @@ export default class PlayerScreen extends PureComponent {
 			query: "",
 			types: ['artists'],
 			artist: null,
-			tracks: undefined,
+			tracks: "",
 			errorMessage: ''
 		};
 
@@ -79,11 +79,16 @@ export default class PlayerScreen extends PureComponent {
 	handleSearch(jsonData) {
 		console.log(jsonData)
 		const artist = jsonData.artists.items[0];
-		console.log(artist)
+		const song_id = jsonData.tracks.items[0];
+		console.log(song_id)
 		if(artist) {
 			this.loadTracks(artist.id);
 			return this.updateProfile(jsonData)
-		  } else {
+		} else if(song_id) {
+			this.setState({ tracks: song_id })
+			console.log(this.state.tracks)
+			return this.updateProfile(jsonData)
+		} else {
 			this.displayErrorMessage('Artist not found, please try again');
 			return false;
 		}
@@ -93,7 +98,7 @@ export default class PlayerScreen extends PureComponent {
 		SpotifySearch.getSongs(artistId)
 		.then((json) => {
 			this.setState({
-				tracks: json.tracks
+				tracks: json
 			})
 			console.log(this.state.tracks)
 		})
@@ -154,7 +159,7 @@ export default class PlayerScreen extends PureComponent {
 						/>
 					</View>
 				</ScrollView>
-				<Text artist={this.state.tracks}>Songs:</Text>
+				<Text>Songs:{this.state.tracks.name}</Text>
 				<View style={styles.inputContainer}>
 					<TouchableOpacity
 						style={styles.enterButton}

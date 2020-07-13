@@ -11,7 +11,7 @@ const SpotifySearch = {
     },
 
     getSongsUri: (artistId) => {
-        return `${ApiPrefix}/artists/${artistId}/top-tracks?country=US&`;
+        return `${ApiPrefix}/search?q=${encodeURI(artistId)}&type=track&limit=5`
     },
 
     search: async (query) => {
@@ -27,7 +27,7 @@ const SpotifySearch = {
     },
 
     getSongs: (artistId) => {
-        const searchUri = SpotifySearch.getSearchUri(artistId);
+        const searchUri = SpotifySearch.getSongsUri(artistId);
         return fetch(searchUri, {
             method: 'GET',
             headers: {
