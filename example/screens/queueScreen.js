@@ -7,6 +7,7 @@ export default class QueueScreen extends PureComponent {
     return (
       <View>
         <Text>You are in the queueScreen</Text>
+        <Text>The code is: {this.props.navigation.state.params.code}</Text>
       </View>
     );
   }
