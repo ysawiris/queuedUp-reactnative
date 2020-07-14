@@ -2,7 +2,7 @@ import Spotify from 'rn-spotify-sdk';
 
 
 const ApiPrefix = "https://api.spotify.com/v1";
-const spotify_token = "BQAdDeObKwP2ZtSqSzGQw7hARklvUE79p9VjTjiwAvJ353ABju7p--SSG6bL7IY09CDQwHGmbHk2adMz-jpQW4NnZJTyc-JwcUrpp2EhrecQTrVYP11HGAeEoXJcuxq6ss1TvqbkLSAdqtre02dmWmtalXg-wnUK5JMWAkkRlbbG8f8ipA0NibDKJM3wyWN4nVsQYCAcPycv0QscP4WYtwd8bF0u1iYhqGKr_bhqjpg89rIGcAcH7KHN8w7qhel61UWLYdFHRURskcZ6VA"
+const spotify_token = "BQCyLnETpH-qu6Qj0PfRlEsNSVDtyXkLWIK0VrrB2H1UuS31iuJUO7qor52duPj6KiDBoAslFX9u9f5ErwhM7b3PrWBvE_Y-tlbYyw4pyaagOQctyC_nDczPIow-kfs-XOkjhVeAZXEE4kDRb5o9kSFUGgLTJWQfMrC8iu8SMtCMY8J9IXUwFkp_uqmqENtPAZfhk8k5IYj76OoEoxwkU0ERrMh-4BqpG85i1d9PRiyGDxdU7M6dqjv2h2xSl6MdaotE_XXrM1tTjhFnsg"
 // const spotify_token = Spotify.authenticate
 
 const SpotifySearch = {
