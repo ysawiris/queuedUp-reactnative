@@ -2,7 +2,7 @@ import Spotify from 'rn-spotify-sdk';
 
 
 const ApiPrefix = "https://api.spotify.com/v1";
-const spotify_token = "BQDvlygiGN2Bi4NJY4xRnh7XyuUWXtft7srH3NnkKpgHYOoDU3WBaYnmfap0FuxhoBHZK20v4WXCUCcaHHoDJIEIDMG5NFPlBShuAf5Tx0wn_p_xxuMfHRA6VmLrsix-bzBorRZf6HcLaz8JzdR1n-llm2Wgi4I29QZbTxjSj986nwRlpoa7HMGlfsW6tuc7wqEulbTbLMTl61tBrLVKjJUPL9S23aV8kq_cU44k6ymAVRXy4LGhljif93B-nlgcQDV10OFgdjcYVvCJag"
+const spotify_token = "BQAdDeObKwP2ZtSqSzGQw7hARklvUE79p9VjTjiwAvJ353ABju7p--SSG6bL7IY09CDQwHGmbHk2adMz-jpQW4NnZJTyc-JwcUrpp2EhrecQTrVYP11HGAeEoXJcuxq6ss1TvqbkLSAdqtre02dmWmtalXg-wnUK5JMWAkkRlbbG8f8ipA0NibDKJM3wyWN4nVsQYCAcPycv0QscP4WYtwd8bF0u1iYhqGKr_bhqjpg89rIGcAcH7KHN8w7qhel61UWLYdFHRURskcZ6VA"
 // const spotify_token = Spotify.authenticate
 
 const SpotifySearch = {
@@ -16,6 +16,7 @@ const SpotifySearch = {
 
     search: async (query) => {
         const searchUri = SpotifySearch.getSearchUri(query);
+
         return fetch(searchUri, {
             method: 'GET',
             headers: {

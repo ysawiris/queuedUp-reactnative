@@ -9,7 +9,8 @@ import {
 	ScrollView,
 	TextInput,
 	Keyboard,
-	TouchableOpacity
+	TouchableOpacity,
+	Image
 } from 'react-native';
 import Spotify from 'rn-spotify-sdk';
 import SpotifySearch from './spotify_search';
@@ -80,12 +81,12 @@ export default class PlayerScreen extends PureComponent {
 		console.log(jsonData)
 		const artist = jsonData.artists.items[0];
 		const song_id = jsonData.tracks.items[0];
-		console.log(song_id)
 		if(artist) {
 			this.loadTracks(artist.id);
 			return this.updateProfile(jsonData)
 		} else if(song_id) {
 			this.setState({ tracks: song_id })
+			return Spotify.playURI(this.state.tracks.uri, 0, 0);
 			console.log(this.state.tracks)
 			return this.updateProfile(jsonData)
 		} else {
@@ -100,7 +101,7 @@ export default class PlayerScreen extends PureComponent {
 			this.setState({
 				tracks: json
 			})
-			console.log(this.state.tracks)
+			console.log(this.state.tracks.uri)
 		})
 	}
 
@@ -123,9 +124,19 @@ export default class PlayerScreen extends PureComponent {
 		this.setState({ query });
 	}
 
+	showInfo = () => {
+		return (
+			<View>
+				<Text>{this.state.tracks.name}</Text>
+				<Text>{this.state.tracks.artists[0]}</Text>
+			</View>
+		);
+	}
+
 
 	render() {
 		const { query } = this.state;
+
 		return (
 			<View style={styles.container}>
 				{ this.state.spotifyUserName!=null ? (
@@ -159,7 +170,13 @@ export default class PlayerScreen extends PureComponent {
 						/>
 					</View>
 				</ScrollView>
-				<Text>Songs:{this.state.tracks.name}</Text>
+				{/* <Image
+					source={this.state.tracks ? this.state.tracks.album.images[0].url : null}
+					style={{ width: 40, height: 40 }}
+				/> */}
+				<Text>{this.state.tracks.name}</Text>
+				<Text>{this.state.tracks ? this.state.tracks.artists[0].name : null}</Text>
+				{/* { this.state.tracks ? this.showInfo : null } */}
 				<View style={styles.inputContainer}>
 					<TouchableOpacity
 						style={styles.enterButton}
@@ -168,7 +185,6 @@ export default class PlayerScreen extends PureComponent {
 						<Text style={styles.enterButtonText}>Enter</Text>
 					</TouchableOpacity>
 				</View>
-
 			</View>
 		);
 	}
