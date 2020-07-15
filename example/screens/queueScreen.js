@@ -1,5 +1,15 @@
 import React, { PureComponent } from "react";
-import { View, Text, Image, TextInput, ScrollView, StyleSheet, TouchableOpacity, Keyboard } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableHighlight,
+  Keyboard,
+} from "react-native";
 import Spotify from "rn-spotify-sdk";
 import SpotifySearch from "./../spotifySearch";
 
@@ -150,6 +160,9 @@ export default class QueueScreen extends PureComponent {
               <Text>Search</Text>
             </TouchableOpacity>
           </View>
+          <TouchableHighlight onPress={this.spotifyLogoutButtonWasPressed}>
+            <Text>Logout</Text>
+          </TouchableHighlight>
         </View>
         <View style={styles.queueWrapper}>
           <Text style={styles.queueText}>Current Queue</Text>
