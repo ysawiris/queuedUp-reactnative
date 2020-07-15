@@ -32,6 +32,7 @@ const CodeNavigaor = createSwitchNavigator({
 const LoginNavigator = createSwitchNavigator({
   initial: { screen: LoginPage },
   player: { screen: QueueScreen },
+  search: { screen: SearchScreen }
 });
 
 const App = createStackNavigator(

@@ -61,6 +61,10 @@ export default class QueueScreen extends PureComponent {
     this.props.navigation.navigate("initial");
   }
 
+  goToSearchScreen() {
+    this.props.navigation.navigate("search");
+  }
+
   spotifyLogoutButtonWasPressed() {
     Spotify.logout().finally(() => {
       this.goToInitialScreen();
@@ -70,6 +74,9 @@ export default class QueueScreen extends PureComponent {
   search() {
     const result = Spotify.search(this.state.query, this.state.types, Spotify.authenticate.options)
       .then((json) => this.handleSearch(json))
+      .then(() => {
+        this.goToSearchScreen();
+      })
       .catch((err) => {
         console.log(err);
       });
@@ -87,7 +94,7 @@ export default class QueueScreen extends PureComponent {
       console.log("tracks!");
       console.log(this.state.tracks);
       console.log(`Playing uri: ${this.state.tracks.items[0].uri}`);
-      Spotify.playURI(this.state.tracks.items[0].uri, 0, 0);
+      // Spotify.playURI(this.state.tracks.items[0].uri, 0, 0);
     } else {
       this.displayErrorMessage("Artist not found, please try again");
       return false;
