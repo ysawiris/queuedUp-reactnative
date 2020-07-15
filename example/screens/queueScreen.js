@@ -1,9 +1,120 @@
 import React, { PureComponent } from "react";
-import { View, Text, Image, TextInput, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, TextInput, ScrollView, StyleSheet, TouchableOpacity, Keyboard } from "react-native";
 import Spotify from "rn-spotify-sdk";
+import SpotifySearch from "./../spotifySearch";
 
 export default class QueueScreen extends PureComponent {
+  static navigationOptions = {
+    title: "Player",
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      spotifyUserName: null,
+      query: "",
+      types: ["track"],
+      artist: null,
+      tracks: {
+        items: [],
+      },
+      errorMessage: "",
+      uri: null,
+    };
+
+    this.spotifyLogoutButtonWasPressed = this.spotifyLogoutButtonWasPressed.bind(this);
+    this.search = this.search.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
+  }
+
+  componentDidMount() {
+    // send api request to get user info
+    Spotify.getMe()
+      .then((result) => {
+        // update state with user info
+        this.setState({ spotifyUserName: result.display_name });
+        console.log(this.state.spotifyUserName);
+        // play song
+        // return Spotify.playURI("spotify:track:0W9E3s2G4szLUwXsE17x5E", 0, 0);
+      })
+      .then(() => {
+        // success
+      })
+      .catch((error) => {
+        // error
+        Alert.alert("Error", error.message);
+      });
+  }
+
+  goToInitialScreen() {
+    this.props.navigation.navigate("initial");
+  }
+
+  spotifyLogoutButtonWasPressed() {
+    Spotify.logout().finally(() => {
+      this.goToInitialScreen();
+    });
+  }
+
+  search() {
+    const result = Spotify.search(this.state.query, this.state.types, Spotify.authenticate.options)
+      .then((json) => this.handleSearch(json))
+      .catch((err) => {
+        console.log(err);
+      });
+    return result;
+  }
+
+  handleSearch(jsonData) {
+    const song_items = jsonData.tracks;
+    // console.log(song_items)
+
+    if (song_items) {
+      this.setState({ tracks: song_items });
+      // this.setState({ uri: uri})
+      // return Spotify.playURI(this.state.tracks.uri, 0, 0);
+      console.log("tracks!");
+      console.log(this.state.tracks);
+      console.log(`Playing uri: ${this.state.tracks.items[0].uri}`);
+      Spotify.playURI(this.state.tracks.items[0].uri, 0, 0);
+    } else {
+      this.displayErrorMessage("Artist not found, please try again");
+      return false;
+    }
+  }
+
+  loadTracks(artistId) {
+    SpotifySearch.getSongs(artistId).then((json) => {
+      this.setState({
+        tracks: json,
+      });
+    });
+  }
+
+  displayErrorMessage(message) {
+    this.setState({
+      errorMessage: message,
+    });
+  }
+
+  handleNameChange(query) {
+    this.setState({ query });
+  }
+
   render() {
+    const { query } = this.state;
+    const itemsData = this.state.tracks.items.map((item) => {
+      return (
+        <View>
+          <Text key={item.id}>{item.name}</Text>
+
+          {/* Map() function for artists */}
+          <Text>{item.artists[0].name}</Text>
+        </View>
+      );
+    });
+
     return (
       <View style={styles.pageWrapper}>
         <View style={styles.headerWrapper}>
@@ -20,15 +131,24 @@ export default class QueueScreen extends PureComponent {
           <View style={styles.searchSongsWrapper}>
             <Text style={styles.searchSongsText}>Search for Songs</Text>
           </View>
-
           <View style={styles.songSearchBoxWrapper}>
             <TextInput
               style={styles.songSearchBox}
               // placeholder="No Complaints"
               placeholderTextColor="#EEEEEE"
+              // onChangeText={(newText) => this.handleChangeText(newText)}
+              onBlur={Keyboard.dismiss}
+              value={this.state.query}
+              onChangeText={this.handleNameChange}
+              // value={text}
               // onChangeText={(text) => this.setState({ code: text })}
-              // defaultValue="No Complaints"
+              // defaultValue={this.state.text}
             />
+          </View>
+          <View>
+            <TouchableOpacity onPress={this.search}>
+              <Text>Search</Text>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.queueWrapper}>
