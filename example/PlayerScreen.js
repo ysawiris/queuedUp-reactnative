@@ -29,11 +29,13 @@ export default class PlayerScreen extends PureComponent {
 		this.state = {
 			spotifyUserName: null,
 			query: "",
-			types: ['artists'],
+			types: ['track'],
 			artist: null,
-			tracks: "",
+			tracks: {
+				items: []
+			},
 			errorMessage: '',
-			uri: null
+			uri: null,
 		};
 
 		this.spotifyLogoutButtonWasPressed = this.spotifyLogoutButtonWasPressed.bind(this);
@@ -70,7 +72,7 @@ export default class PlayerScreen extends PureComponent {
 	}
 
 	search() {
-		const result = SpotifySearch.search(this.state.query, this.state.types)
+		const result = Spotify.search(this.state.query,this.state.types, Spotify.authenticate.options)
 			.then(json => this.handleSearch(json))
 			.catch(err => {
 				console.log(err)
@@ -79,20 +81,15 @@ export default class PlayerScreen extends PureComponent {
 	}
 
 	handleSearch(jsonData) {
-		console.log(jsonData)
-		console.log(jsonData.tracks.items[0].album.images[0].url)
-		const artist = jsonData.artists.items[0];
-		const song_id = jsonData.tracks.items[0];
-		const uri = jsonData.tracks.items[0].album.images[0].url
-		if(artist) {
-			this.loadTracks(artist.id);
-			return this.updateProfile(jsonData)
-		} else if(song_id) {
-			this.setState({ tracks: song_id })
-			this.setState({ uri: uri})
-			return Spotify.playURI(this.state.tracks.uri, 0, 0);
+		const song_items = jsonData.tracks;
+		// console.log(song_items)
+
+		if(song_items) {
+			this.setState({ tracks: song_items })
+			// this.setState({ uri: uri})
+			// return Spotify.playURI(this.state.tracks.uri, 0, 0);
 			console.log(this.state.tracks)
-			return this.updateProfile(jsonData)
+
 		} else {
 			this.displayErrorMessage('Artist not found, please try again');
 			return false;
@@ -105,18 +102,17 @@ export default class PlayerScreen extends PureComponent {
 			this.setState({
 				tracks: json
 			})
-			console.log(this.state.tracks.uri)
 		})
 	}
 
-	updateProfile(jsonData) {
-		const artist =jsonData.artists.items[0];
-		this.setState({
-		  artist: artist, 
-		  errorMessage: ''
-		});
-		return jsonData;
-	}
+	// updateProfile(jsonData) {
+	// 	const artist =jsonData.artists.items[0];
+	// 	this.setState({
+	// 	  artist: artist, 
+	// 	  errorMessage: ''
+	// 	});
+	// 	return jsonData;
+	// }
 
 	displayErrorMessage(message) {
 		this.setState({
@@ -128,18 +124,34 @@ export default class PlayerScreen extends PureComponent {
 		this.setState({ query });
 	}
 
-	showInfo = () => {
-		return (
-			<View>
-				<Text>{this.state.tracks.name}</Text>
-				<Text>{this.state.tracks.artists[0]}</Text>
-			</View>
-		);
-	}
+	// showInfo = () => {
+	// 	return (
+	// 		// <View>
+	// 		// 	<Text>{this.state.tracks.name}</Text>
+	// 		// 	<Text>{this.state.tracks.artists[0]}</Text>
+	// 		// </View>
+	// 		this.state.tracks.items.map((item) => {
+	// 				return (
+	// 					<Text>{item.name}</Text>
+	// 				)
+	// 			})
+			
+	// 	);
+	// }
 
 
 	render() {
 		const { query } = this.state;
+		const itemsData = this.state.tracks.items.map(item => {
+			return (
+				<View>
+					<Text key={item.id}>{item.name}</Text>
+					
+					{/* Map() function for artists */}
+					<Text>{item.artists[0].name}</Text>
+				</View>
+			)
+		}) 
 
 		return (
 			<View style={styles.container}>
@@ -155,14 +167,6 @@ export default class PlayerScreen extends PureComponent {
 				<TouchableHighlight onPress={this.spotifyLogoutButtonWasPressed}>
 					<Text>Logout</Text>
 				</TouchableHighlight>
-				{/* <form onSubmit={ (e) => { e.preventDefault(); this.search(); } }>
-					<input 
-						className="db fl h2 w-90 ba bw2 b--lightest-blue" 
-						type="text" 
-						placeholder="Search for an artist"
-						value={this.state.query}
-						onChange={event => {this.setState({query: event.target.value }) }} />
-				</form> */}
 				<ScrollView>
 					<View style={styles.inputContainer}>
 						<TextInput
@@ -174,17 +178,6 @@ export default class PlayerScreen extends PureComponent {
 						/>
 					</View>
 				</ScrollView>
-				<View style={styles.contianer}>
-					<Image
-						source={{
-							uri : this.state.uri
-						}}
-						style={{ height: 100, width: 100}}
-					/>
-				</View>
-				<Text>{this.state.tracks.name}</Text>
-				<Text>{this.state.tracks ? this.state.tracks.artists[0].name : null}</Text>
-				{/* { this.state.tracks ? this.showInfo : null } */}
 				<View style={styles.inputContainer}>
 					<TouchableOpacity
 						style={styles.enterButton}
@@ -193,6 +186,20 @@ export default class PlayerScreen extends PureComponent {
 						<Text style={styles.enterButtonText}>Enter</Text>
 					</TouchableOpacity>
 				</View>
+
+				{/* <View style={styles.contianer}>
+					<Image
+						source={{
+							uri : this.state.uri
+						}}
+						style={{ height: 100, width: 100}}
+					/>
+				</View>
+				<Text>{this.state.tracks.name}</Text>
+				{/* <Text>{this.state.tracks ? this.state.tracks.artists[0].name : null}</Text> */}
+				<ScrollView>
+					{ itemsData }
+				</ScrollView>
 			</View>
 		);
 	}
@@ -206,6 +213,11 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: '#F5FCFF',
+	},
+	title: {
+		fontSize: 30,
+		textAlign: 'center',
+		margin: 10,
 	},
 	greeting: {
 		fontSize: 20,
