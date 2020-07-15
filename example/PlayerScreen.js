@@ -149,6 +149,12 @@ export default class PlayerScreen extends PureComponent {
 					
 					{/* Map() function for artists */}
 					<Text>{item.artists[0].name}</Text>
+					<Image
+						source={{
+							uri : item.album.images[0].url
+						}}
+						style={{ height: 100, width: 100}}
+					/>
 				</View>
 			)
 		}) 
