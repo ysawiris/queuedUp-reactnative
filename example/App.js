@@ -20,11 +20,13 @@ import { createSwitchNavigator, createStackNavigator, createAppContainer } from 
 
 import QueueScreen from "./screens/queueScreen";
 import PlayerScreen from "./screens/playerScreen";
+import SearchScreen from "./screens/searchScreen";
 import HomePage from "./screens/homePage";
 import LoginPage from "./screens/loginPage";
 
 const CodeNavigaor = createSwitchNavigator({
   player: { screen: QueueScreen },
+  searchResults: { screen: SearchScreen }
 });
 
 const LoginNavigator = createSwitchNavigator({
