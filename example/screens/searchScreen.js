@@ -10,109 +10,58 @@ import {
   TouchableHighlight,
   Keyboard,
 } from "react-native";
-import Spotify from "rn-spotify-sdk";
-import SpotifySearch from "./../spotifySearch";
+
 
 export default class SearchScreen extends PureComponent {
     static navigationOptions = {
         title: "Player",
     };
-
+    
     constructor(props) {
-        super(props);
-    
-        this.state = {
-          spotifyUserName: null,
-          query: "",
-          types: ["track"],
-          artist: null,
-          tracks: {
-            items: [],
-          },
-          errorMessage: "",
-          uri: null,
-        };
-    
-        // this.spotifyLogoutButtonWasPressed = this.spotifyLogoutButtonWasPressed.bind(this);
-        // this.search = this.search.bind(this);
-        // this.handleNameChange = this.handleNameChange.bind(this);
+      super(props);
+    }
+
+    handleClick = () => {
+      this.props.toggleSearch();
     }
 
     render() {
-        const { query } = this.state;
-        const itemsData = this.state.tracks.items.map((item) => {
+        const searchResults = this.props.tracks.map((item) => {
           return (
-            <View>
-              <Text key={item.id}>{item.name}</Text>
-    
-              {/* Map() function for artists */}
-              <Text>{item.artists[0].name}</Text>
-            </View>
-          );
-        });
-    
-        return (
-          <View style={styles.pageWrapper}>
-            <View style={styles.headerWrapper}>
-              <View style={styles.logoWrapper}>
-                <Image source={require("../assets/images/logo.png")} style={styles.logo} />
-              </View>
-              <View style={styles.topRightCorner}>
-                <Image style={styles.playIcon} source={require("../assets/images/play_icon.png")} />
-                <Image style={styles.playSongIcon} source={require("../assets/images/song1.png")} />
-              </View>
-            </View>
-    
-            <View style={styles.searchWrapper}>
-              <View style={styles.searchSongsWrapper}>
-                <Text style={styles.searchSongsText}>Search for Songs</Text>
-              </View>
-              <View style={styles.songSearchBoxWrapper}>
-                <TextInput
-                  style={styles.songSearchBox}
-                  // placeholder="No Complaints"
-                  placeholderTextColor="#EEEEEE"
-                  // onChangeText={(newText) => this.handleChangeText(newText)}
-                  onBlur={Keyboard.dismiss}
-                  value={this.state.query}
-                  onChangeText={this.handleNameChange}
-                  // value={text}
-                  // onChangeText={(text) => this.setState({ code: text })}
-                  // defaultValue={this.state.text}
-                />
-              </View>
-              <View>
-                <TouchableOpacity onPress={this.search}>
-                  <Text>Search</Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableHighlight onPress={this.spotifyLogoutButtonWasPressed}>
-                <Text>Logout</Text>
-              </TouchableHighlight>
-            </View>
-            <View style={styles.queueWrapper}>
-              <Text style={styles.queueText}>Search Results</Text>
-              <ScrollView>
                 <View style={styles.songCardWrapper}>
                   <View style={styles.albumCoverWrapper}>
-                    <Image style={styles.albumCover} source={require("../assets/images/song1.png")} />
+                    <Image
+                      source={{
+                        uri : item.album.images[0].url
+                      }}
+                      style={styles.albumCover}
+                    />
                   </View>
                   <View style={styles.songInfoWrapper}>
                     <Text numberOfLines={1} style={styles.songTitle}>
-                      {this.state.tracks.next}
+                      {item.name}
                     </Text>
                     <Text numberOfLines={1} style={styles.songArtist}>
-                      Emotional Oranges
+                      {item.artists[0].name}
                     </Text>
                     <Text numberOfLines={1} style={styles.songAlbum}>
-                      The Juice, Vol 2
+                      {item.album.name}
                     </Text>
                   </View>
                 </View>
-              </ScrollView>
-            </View>
-          </View>
-        );
+          );
+        });
+        return (
+
+        <View style={styles.queueWrapper}>
+          <TouchableOpacity onPress={this.handleClick}>
+              <Text>Back</Text>
+          </TouchableOpacity>
+          <ScrollView>
+            { searchResults }
+          </ScrollView>
+        </View>
+        )
       }
     }
     

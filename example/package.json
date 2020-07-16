@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "nodemon": "^2.0.4",
     "react": "16.8.3",
     "react-native": "^0.60.5",
     "react-native-fontawesome": "^7.0.0",

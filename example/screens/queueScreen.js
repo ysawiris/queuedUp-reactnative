@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Spotify from "rn-spotify-sdk";
 import SpotifySearch from "./../spotifySearch";
+import SearchScreen from "./searchScreen";
 
 export default class QueueScreen extends PureComponent {
   static navigationOptions = {
@@ -26,11 +27,11 @@ export default class QueueScreen extends PureComponent {
       query: "",
       types: ["track"],
       artist: null,
-      tracks: {
-        items: [],
-      },
+      tracks: [],
       errorMessage: "",
       uri: null,
+      test: [],
+      showSearch: false
     };
 
     this.spotifyLogoutButtonWasPressed = this.spotifyLogoutButtonWasPressed.bind(this);
@@ -61,10 +62,6 @@ export default class QueueScreen extends PureComponent {
     this.props.navigation.navigate("initial");
   }
 
-  goToSearchScreen() {
-    this.props.navigation.navigate("search");
-  }
-
   spotifyLogoutButtonWasPressed() {
     Spotify.logout().finally(() => {
       this.goToInitialScreen();
@@ -74,9 +71,6 @@ export default class QueueScreen extends PureComponent {
   search() {
     const result = Spotify.search(this.state.query, this.state.types, Spotify.authenticate.options)
       .then((json) => this.handleSearch(json))
-      .then(() => {
-        this.goToSearchScreen();
-      })
       .catch((err) => {
         console.log(err);
       });
@@ -84,16 +78,17 @@ export default class QueueScreen extends PureComponent {
   }
 
   handleSearch(jsonData) {
-    const song_items = jsonData.tracks;
+    const song_items = jsonData.tracks.items;
     // console.log(song_items)
 
     if (song_items) {
-      this.setState({ tracks: song_items });
+      this.setState({ 
+        tracks: song_items,
+        showSearch: true
+     });
       // this.setState({ uri: uri})
       // return Spotify.playURI(this.state.tracks.uri, 0, 0);
-      console.log("tracks!");
       console.log(this.state.tracks);
-      console.log(`Playing uri: ${this.state.tracks.items[0].uri}`);
       // Spotify.playURI(this.state.tracks.items[0].uri, 0, 0);
     } else {
       this.displayErrorMessage("Artist not found, please try again");
@@ -119,59 +114,15 @@ export default class QueueScreen extends PureComponent {
     this.setState({ query });
   }
 
+  toggleSearch = () => {
+    this.setState({showSearch: false })
+  }
+  
+
   render() {
     const { query } = this.state;
-    const itemsData = this.state.tracks.items.map((item) => {
-      return (
-        <View>
-          <Text key={item.id}>{item.name}</Text>
-
-          {/* Map() function for artists */}
-          <Text>{item.artists[0].name}</Text>
-        </View>
-      );
-    });
-
-    return (
-      <View style={styles.pageWrapper}>
-        <View style={styles.headerWrapper}>
-          <View style={styles.logoWrapper}>
-            <Image source={require("../assets/images/logo.png")} style={styles.logo} />
-          </View>
-          <View style={styles.topRightCorner}>
-            <Image style={styles.playIcon} source={require("../assets/images/play_icon.png")} />
-            <Image style={styles.playSongIcon} source={require("../assets/images/song1.png")} />
-          </View>
-        </View>
-
-        <View style={styles.searchWrapper}>
-          <View style={styles.searchSongsWrapper}>
-            <Text style={styles.searchSongsText}>Search for Songs</Text>
-          </View>
-          <View style={styles.songSearchBoxWrapper}>
-            <TextInput
-              style={styles.songSearchBox}
-              // placeholder="No Complaints"
-              placeholderTextColor="#EEEEEE"
-              // onChangeText={(newText) => this.handleChangeText(newText)}
-              onBlur={Keyboard.dismiss}
-              value={this.state.query}
-              onChangeText={this.handleNameChange}
-              // value={text}
-              // onChangeText={(text) => this.setState({ code: text })}
-              // defaultValue={this.state.text}
-            />
-          </View>
-          <View>
-            <TouchableOpacity onPress={this.search}>
-              <Text>Search</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableHighlight onPress={this.spotifyLogoutButtonWasPressed}>
-            <Text>Logout</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={styles.queueWrapper}>
+    const queue = (
+      <View style={styles.queueWrapper}>
           <Text style={styles.queueText}>Current Queue</Text>
           <ScrollView>
             <View style={styles.songCardWrapper}>
@@ -240,6 +191,49 @@ export default class QueueScreen extends PureComponent {
             </View>
           </ScrollView>
         </View>
+    )
+
+    return (
+      <View style={styles.pageWrapper}>
+        <View style={styles.headerWrapper}>
+          <View style={styles.logoWrapper}>
+            <Image source={require("../assets/images/logo.png")} style={styles.logo} />
+          </View>
+          <View style={styles.topRightCorner}>
+            <Image style={styles.playIcon} source={require("../assets/images/play_icon.png")} />
+            <Image style={styles.playSongIcon} source={require("../assets/images/song1.png")} />
+          </View>
+        </View>
+
+        <View style={styles.searchWrapper}>
+          <View style={styles.searchSongsWrapper}>
+            <Text style={styles.searchSongsText}>Search for Songs</Text>
+          </View>
+          <View style={styles.songSearchBoxWrapper}>
+            <TextInput
+              style={styles.songSearchBox}
+              // placeholder="No Complaints"
+              placeholderTextColor="#EEEEEE"
+              // onChangeText={(newText) => this.handleChangeText(newText)}
+              onBlur={Keyboard.dismiss}
+              value={this.state.query}
+              onChangeText={this.handleNameChange}
+              // value={text}
+              // onChangeText={(text) => this.setState({ code: text })}
+              // defaultValue={this.state.text}
+            />
+          </View>
+          <View>
+            <TouchableOpacity onPress={this.search}>
+              <Text>Search</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableHighlight onPress={this.spotifyLogoutButtonWasPressed}>
+            <Text>Logout</Text>
+          </TouchableHighlight>
+        </View>
+
+        {this.state.showSearch ? <SearchScreen tracks={this.state.tracks} toggleSearch={this.toggleSearch}/> : queue}
       </View>
     );
   }

@@ -26,7 +26,7 @@ import LoginPage from "./screens/loginPage";
 
 const CodeNavigaor = createSwitchNavigator({
   player: { screen: QueueScreen },
-  searchResults: { screen: SearchScreen }
+  search: { screen: SearchScreen }
 });
 
 const LoginNavigator = createSwitchNavigator({
