@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import Spotify from "rn-spotify-sdk";
 import SpotifySearch from "./../spotifySearch";
+import SearchScreen from "./searchScreen";
 
 export default class QueueScreen extends PureComponent {
   static navigationOptions = {
@@ -27,11 +28,12 @@ export default class QueueScreen extends PureComponent {
       query: "",
       types: ["track"],
       artist: null,
-      tracks: {
-        items: [],
-      },
+      tracks: [],
       errorMessage: "",
       uri: null,
+      test: [],
+      showSearch: false,
+      currentQueueTracks: [],
     };
 
     this.spotifyLogoutButtonWasPressed = this.spotifyLogoutButtonWasPressed.bind(this);
@@ -79,20 +81,18 @@ export default class QueueScreen extends PureComponent {
   }
 
   handleSearch(jsonData) {
-    console.log("Json Data");
-    console.log(jsonData);
-
-    const song_items = jsonData.tracks;
+    const song_items = jsonData.tracks.items;
     // console.log(song_items)
 
     if (song_items) {
-      this.setState({ tracks: song_items });
+      this.setState({
+        tracks: song_items,
+        showSearch: true,
+      });
       // this.setState({ uri: uri})
       // return Spotify.playURI(this.state.tracks.uri, 0, 0);
-      console.log("tracks!");
       console.log(this.state.tracks);
-      console.log(`Playing uri: ${this.state.tracks.items[0].uri}`);
-      Spotify.playURI(this.state.tracks.items[0].uri, 0, 0);
+      // Spotify.playURI(this.state.tracks.items[0].uri, 0, 0);
     } else {
       this.displayErrorMessage("Artist not found, please try again");
       return false;
@@ -117,18 +117,67 @@ export default class QueueScreen extends PureComponent {
     this.setState({ query });
   }
 
-  render() {
-    const { query } = this.state;
-    const itemsData = this.state.tracks.items.map((item) => {
-      return (
-        <View>
-          <Text key={item.id}>{item.name}</Text>
+  updateCurrentQueue = (newSong) => {
+    let currentQueueTracks = [...this.state.currentQueueTracks];
+    currentQueueTracks.push(newSong);
+    this.setState({ currentQueueTracks });
+    console.log("Current queue tracks");
+    // console.log(this.state.currentQueueTracks);
+  };
 
-          {/* Map() function for artists */}
-          <Text>{item.artists[0].name}</Text>
+  toggleSearch = () => {
+    this.setState({ showSearch: false });
+  };
+
+  renderQueue = (tracks) => {
+    console.log("Tracks from renderQueue", tracks);
+
+    if (!tracks) {
+      return (
+        <View style={styles.queueWrapper}>
+          <Text style={styles.queueText}>Current Queue</Text>
+          <Text style={styles.queueText}>No songs</Text>
         </View>
       );
-    });
+    }
+
+    return (
+      <View style={styles.queueWrapper}>
+        <Text style={styles.queueText}>Current Queue</Text>
+        <ScrollView>
+          {tracks.map((item) => (
+            <View key={item.id} style={styles.songCardWrapper}>
+              <View style={styles.albumCoverWrapper}>
+                <Image
+                  source={{
+                    uri: item.album.images[0].url,
+                  }}
+                  style={styles.albumCover}
+                />
+              </View>
+              <View style={styles.songInfoWrapper}>
+                <Text numberOfLines={1} style={styles.songTitle}>
+                  {item.name}
+                </Text>
+                <Text numberOfLines={1} style={styles.songArtist}>
+                  {item.artists[0].name}
+                </Text>
+                <Text numberOfLines={1} style={styles.songAlbum}>
+                  {item.album.name}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  };
+
+  render() {
+    const { query } = this.state;
+
+    console.log(`Current tracks:`);
+    console.log(this.state.currentQueueTracks);
 
     return (
       <View style={styles.pageWrapper}>
@@ -146,104 +195,68 @@ export default class QueueScreen extends PureComponent {
           <View style={styles.searchSongsWrapper}>
             <Text style={styles.searchSongsText}>Search for Songs</Text>
           </View>
-          <View style={styles.songSearchBoxWrapper}>
-            <TextInput
-              style={styles.songSearchBox}
-              // placeholder="No Complaints"
-              placeholderTextColor="#EEEEEE"
-              // onChangeText={(newText) => this.handleChangeText(newText)}
-              onBlur={Keyboard.dismiss}
-              value={this.state.query}
-              onChangeText={this.handleNameChange}
-              // value={text}
-              // onChangeText={(text) => this.setState({ code: text })}
-              // defaultValue={this.state.text}
-            />
+          <View style={styles.searchComponentWrapper}>
+            <View style={styles.songSearchBoxWrapper}>
+              <TextInput
+                style={styles.songSearchBox}
+                // placeholder="No Complaints"
+                placeholderTextColor="#EEEEEE"
+                // onChangeText={(newText) => this.handleChangeText(newText)}
+                onBlur={Keyboard.dismiss}
+                value={this.state.query}
+                onChangeText={this.handleNameChange}
+                // value={text}
+                // onChangeText={(text) => this.setState({ code: text })}
+                // defaultValue={this.state.text}
+              />
+            </View>
+            <View>
+              <TouchableOpacity onPress={this.search} style={styles.searchButton}>
+                <Image style={styles.searchIcon} source={require("../assets/images/search_icon.png")} />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View>
-            <TouchableOpacity onPress={this.search}>
-              <Text>Search</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableHighlight onPress={this.spotifyLogoutButtonWasPressed}>
+          <TouchableHighlight style={styles.logoutWrapper} onPress={this.spotifyLogoutButtonWasPressed}>
             <Text>Logout</Text>
           </TouchableHighlight>
         </View>
-        <View style={styles.queueWrapper}>
-          <Text style={styles.queueText}>Current Queue</Text>
-          <ScrollView>
-            <View style={styles.songCardWrapper}>
-              <View style={styles.albumCoverWrapper}>
-                <Image style={styles.albumCover} source={require("../assets/images/song1.png")} />
-              </View>
-              <View style={styles.songInfoWrapper}>
-                <Text numberOfLines={1} style={styles.songTitle}>
-                  West Coast Love
-                </Text>
-                <Text numberOfLines={1} style={styles.songArtist}>
-                  Emotional Oranges
-                </Text>
-                <Text numberOfLines={1} style={styles.songAlbum}>
-                  The Juice, Vol 2
-                </Text>
-              </View>
-            </View>
-            <View style={styles.songCardWrapper}>
-              <View style={styles.albumCoverWrapper}>
-                <Image style={styles.albumCover} source={require("../assets/images/song2.png")} />
-              </View>
-              <View style={styles.songInfoWrapper}>
-                <Text numberOfLines={1} style={styles.songTitle}>
-                  Daydream
-                </Text>
-                <Text numberOfLines={1} style={styles.songArtist}>
-                  Ash
-                </Text>
-                <Text numberOfLines={1} style={styles.songAlbum}>
-                  Single
-                </Text>
-              </View>
-            </View>
-            <View style={styles.songCardWrapper}>
-              <View style={styles.albumCoverWrapper}>
-                <Image style={styles.albumCover} source={require("../assets/images/song3.png")} />
-              </View>
-              <View style={styles.songInfoWrapper}>
-                <Text numberOfLines={1} style={styles.songTitle}>
-                  Run It Up (feat. Pusha T)
-                </Text>
-                <Text numberOfLines={1} style={styles.songArtist}>
-                  NAV
-                </Text>
-                <Text numberOfLines={1} style={styles.songAlbum}>
-                  Good Intentions
-                </Text>
-              </View>
-            </View>
-            <View style={styles.songCardWrapper}>
-              <View style={styles.albumCoverWrapper}>
-                <Image style={styles.albumCover} source={require("../assets/images/song1.png")} />
-              </View>
-              <View style={styles.songInfoWrapper}>
-                <Text numberOfLines={1} style={styles.songTitle}>
-                  West Coast Love
-                </Text>
-                <Text numberOfLines={1} style={styles.songArtist}>
-                  Emotional Oranges
-                </Text>
-                <Text numberOfLines={1} style={styles.songAlbum}>
-                  The Juice, Vol 2
-                </Text>
-              </View>
-            </View>
-          </ScrollView>
-        </View>
+
+        {this.state.showSearch ? (
+          <SearchScreen
+            tracks={this.state.tracks}
+            toggleSearch={this.toggleSearch}
+            updateCurrentQueue={this.updateCurrentQueue}
+          />
+        ) : (
+          this.renderQueue(this.state.currentQueueTracks)
+        )}
       </View>
     );
   }
 }
 
 const styles = {
+  logoutWrapper: {
+    marginTop: 6,
+  },
+  searchIcon: {
+    marginTop: 3,
+    height: 40,
+    width: 40,
+  },
+  searchComponentWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchButton: {
+    backgroundColor: "#5D5D5D",
+    width: 45,
+    height: 45,
+    alignSelf: "center",
+    borderRadius: 20,
+    marginTop: 18,
+    marginLeft: 3,
+  },
   songInfoWrapper: {
     marginLeft: 10,
   },

@@ -63,7 +63,6 @@ export default class LoginPage extends PureComponent {
     // log into Spotify
     Spotify.login()
       .then((loggedIn) => {
-        Alert.alert(`Spotify client id: ${Spotify}`);
         if (loggedIn) {
           // logged in
           this.goToPlayer();
@@ -100,12 +99,8 @@ export default class LoginPage extends PureComponent {
           <View style={styles.horizontalRule}></View>
           <View style={styles.spotifyButtonWrapper}>
             <TouchableOpacity onPress={this.spotifyLoginButtonWasPressed} style={styles.spotifyButton}>
+              <Image style={styles.spotifyIcon} source={require("../assets/images/spotify_icon.png")} />
               <Text style={styles.spotifyText}>Spotify</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.appleMusicButtonWrapper}>
-            <TouchableOpacity onPress={this.spotifyLoginButtonWasPressed} style={styles.appleMusicButton}>
-              <Text style={styles.appleMusicText}>Apple Music</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -115,6 +110,10 @@ export default class LoginPage extends PureComponent {
 }
 
 const styles = StyleSheet.create({
+  spotifyIcon: {
+    height: 40,
+    width: 40,
+  },
   scrollView: {
     backgroundColor: "#272727",
   },
@@ -160,18 +159,20 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   spotifyButton: {
-    backgroundColor: "#EEEEEE",
-    width: "auto",
-    paddingHorizontal: 20,
-    height: 40,
+    flexDirection: "row",
     alignSelf: "center",
+    alignItems: "center",
+    backgroundColor: "#EEEEEE",
+    width: 125,
+    paddingHorizontal: 5,
+    height: 40,
     borderRadius: 20,
   },
   spotifyText: {
     color: "#272727",
     alignSelf: "center",
     fontSize: 20,
-    paddingTop: 8,
+    // paddingTop: 8,
   },
   appleMusicButtonWrapper: {
     marginTop: 25,
