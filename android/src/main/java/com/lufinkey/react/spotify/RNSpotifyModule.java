@@ -44,7 +44,7 @@ public class RNSpotifyModule extends ReactContextBaseJavaModule implements Playe
 	private BroadcastReceiver networkStateReceiver;
 	private Connectivity currentConnectivity = Connectivity.OFFLINE;
 
-	private Auth auth;
+	public Auth auth;
 	private Handler authRenewalTimer;
 	private SpotifyPlayer player;
 	private TrackController trackController = null;
