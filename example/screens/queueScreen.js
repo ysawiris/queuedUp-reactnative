@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   Keyboard,
+  Alert,
 } from "react-native";
 import Spotify from "rn-spotify-sdk";
 import SpotifySearch from "./../spotifySearch";
@@ -40,6 +41,7 @@ export default class QueueScreen extends PureComponent {
 
   componentDidMount() {
     // send api request to get user info
+
     Spotify.getMe()
       .then((result) => {
         // update state with user info
@@ -77,6 +79,9 @@ export default class QueueScreen extends PureComponent {
   }
 
   handleSearch(jsonData) {
+    console.log("Json Data");
+    console.log(jsonData);
+
     const song_items = jsonData.tracks;
     // console.log(song_items)
 

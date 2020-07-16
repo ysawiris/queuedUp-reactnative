@@ -63,6 +63,7 @@ export default class LoginPage extends PureComponent {
     // log into Spotify
     Spotify.login()
       .then((loggedIn) => {
+        Alert.alert(`Spotify client id: ${Spotify}`);
         if (loggedIn) {
           // logged in
           this.goToPlayer();
