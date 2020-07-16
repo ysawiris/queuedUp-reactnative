@@ -11,6 +11,8 @@ import {
   Keyboard,
 } from "react-native";
 
+import Spotify from "rn-spotify-sdk";
+
 
 export default class SearchScreen extends PureComponent {
     static navigationOptions = {
@@ -25,10 +27,11 @@ export default class SearchScreen extends PureComponent {
       this.props.toggleSearch();
     }
 
+
     render() {
         const searchResults = this.props.tracks.map((item) => {
           return (
-                <View style={styles.songCardWrapper}>
+                <View key={item.id} style={styles.songCardWrapper}>
                   <View style={styles.albumCoverWrapper}>
                     <Image
                       source={{
@@ -57,6 +60,7 @@ export default class SearchScreen extends PureComponent {
           <TouchableOpacity onPress={this.handleClick}>
               <Text>Back</Text>
           </TouchableOpacity>
+          <Text style={styles.queueText}>Search Results</Text>
           <ScrollView>
             { searchResults }
           </ScrollView>
